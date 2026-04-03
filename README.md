@@ -80,3 +80,10 @@ You will primarily work in:
 - Python 3.9+
 - A Gemini API key for LLM features (only needed for modes 1 and 3)
 - No database, no server setup, no external services besides LLM calls
+## Refelection
+- The summary should be 5–7 sentences covering:
+The core concept students needed to understand
+Where students are most likely to struggle
+Where AI was helpful vs misleading
+One way they would guide a student without giving the answer
+
