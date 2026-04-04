@@ -87,3 +87,7 @@ Where students are most likely to struggle
 Where AI was helpful vs misleading
 One way they would guide a student without giving the answer
 
+- The core concept students needed to understand is that DocuBot is built around retrieval where it should find relevant documentation snippets first, then he can use an LLM only on those snippets rather than letting the model guess from the whole corpus.
+- Students are most likely to struggle with the retrieval logic itself — building a useful index, scoring query-document matches, and deciding when the evidence is too weak to answer. 
+- AI was helpful when it summarized or rewrote answers from retrieved context, but misleading when it invented details not actually present in the docs or treated weak matches as strong evidence. 
+- A good student-facing guide would not give the answer directly rather it would point them to the exact snippet(s) that mention the database connection and ask them to compare those with the question. That helps them learn to trust the retrieval output and spot unsupported claims.

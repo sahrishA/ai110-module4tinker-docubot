@@ -11,6 +11,8 @@ import os
 import glob
 
 class DocuBot:
+    MIN_USEFUL_SCORE = 1
+
     def __init__(self, docs_folder="docs", llm_client=None):
         """
         docs_folder: directory containing project documentation files
@@ -50,7 +52,6 @@ class DocuBot:
 
     def build_index(self, documents):
         """
-        TODO (Phase 1):
         Build a tiny inverted index mapping lowercase words to the documents
         they appear in.
 
@@ -64,7 +65,13 @@ class DocuBot:
         ignore punctuation if needed.
         """
         index = {}
-        # TODO: implement simple indexing
+        for filename, text in documents:
+            words = text.lower().split()
+            for word in words:
+                if word not in index:
+                    index[word] = []
+                if filename not in index[word]:
+                    index[word].append(filename)
         return index
 
     # -----------------------------------------------------------
@@ -77,12 +84,21 @@ class DocuBot:
         Return a simple relevance score for how well the text matches the query.
 
         Suggested baseline:
+        
         - Convert query into lowercase words
         - Count how many appear in the text
         - Return the count as the score
         """
-        # TODO: implement scoring
-        return 0
+        query_words=query.lower().split()
+        score = 0
+        for word in query_words:
+            if word in text.lower():
+                score+=1
+        return score
+
+    def _is_useful_score(self, score):
+        """Return whether a score is strong enough to provide useful context."""
+        return score >= self.MIN_USEFUL_SCORE
 
     def retrieve(self, query, top_k=3):
         """
@@ -92,8 +108,22 @@ class DocuBot:
         Return a list of (filename, text) sorted by score descending.
         """
         results = []
-        # TODO: implement retrieval logic
-        return results[:top_k]
+        for filename, text in self.documents:
+            score = self.score_document(query, text)
+            results.append((score, filename, text))
+
+        results.sort(reverse=True)
+
+        # Guardrail: only keep documents with a minimum useful score.
+        # If no document scores at least MIN_USEFUL_SCORE, we have no useful
+        # context and should refuse rather than guess.
+        useful_results = [
+            (filename, text)
+            for score, filename, text in results
+            if self._is_useful_score(score)
+        ]
+
+        return useful_results[:top_k]
 
     # -----------------------------------------------------------
     # Answering Modes
